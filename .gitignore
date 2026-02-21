@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+.ipynb_checkpoints/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+*.so
+
+# Environments
+.env
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Caches
+unsloth_compiled_cache/
+
+# Project outputs
+checkpoint-*/
+lora_model/
+generated_mols.csv
+training_log.csv

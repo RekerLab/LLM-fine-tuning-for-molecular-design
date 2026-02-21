@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "llmmd"
+version = "0.1.0"
+description = "LLM fine-tuning for molecular design: training, generation, and docking evaluation."
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Yan Xiang", email = "1993.xiangyan@gmail.com"}]
+dependencies = [
+    "torch",
+    "unsloth",
+    "transformers",
+    "trl",
+    "datasets",
+    "pandas",
+    "tqdm",
+    "rdkit",
+    "typed-argument-parser",
+]
+
+[project.scripts]
+llmmd-sft = "llmmd.sft:main"
+llmmd-molgen = "llmmd.molgen:main"
+llmmd-dock = "llmmd.docking.evaluate:main"
+
+[tool.setuptools.packages.find]
+include = ["llmmd*"]
+
+[tool.setuptools.package-data]
+"llmmd.docking" = [
+    "data/qvina",
+    "data/smina",
+    "structures/*/*",
+]
