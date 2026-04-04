@@ -4,10 +4,10 @@ Fine-tuning Large Language Models (Llama-3-8B) via Supervised Fine-Tuning (SFT) 
 
 ## Overview
 
-This repository provides tools for:
-1. **Supervised Fine-Tuning (SFT)** of Llama-3-8B (4-bit quantized via Unsloth) with LoRA adapters
-2. **Molecule Generation** from fine-tuned models at fixed or ramping temperatures
-3. **Docking Evaluation** of generated molecules against target proteins using QuickVina/Smina
+This repository provides the `llmmd` package with three CLI tools:
+1. **`llmmd-sft`** — Supervised fine-tuning of Llama-3-8B (4-bit quantized via Unsloth) with LoRA adapters
+2. **`llmmd-molgen`** — Molecule generation from fine-tuned models at fixed or ramping temperatures
+3. **`llmmd-dock`** — Docking evaluation of generated molecules against target proteins using QuickVina/Smina
 
 ## Installation
 
@@ -16,21 +16,22 @@ This repository provides tools for:
 mamba create -n llm-mol python=3.10
 mamba activate llm-mol
 
-# Install dependencies
+# Install conda-only dependencies
 mamba install openbabel rdkit -c conda-forge
-pip install -r requirements.txt
 
-# Install tartarus (docking package)
+# Install the package (registers CLI entry points)
 pip install -e .
 ```
 
 ## Usage
 
+All CLIs use `typed-argument-parser` (Tap). Run any command with `--help` for full argument docs.
+
 ### 1. Supervised Fine-Tuning
 
 ```bash
-python sft.py \
-    --data_path data_so_1syh_sft.json \
+llmmd-sft \
+    --data_path examples/docking/data_so_1syh_sft.json \
     --save_dir so-1syh-160-32-32-128 \
     --epochs 160 \
     --save_epochs_stride 16 \
@@ -41,13 +42,13 @@ python sft.py \
 
 For control experiments with random weight initialization:
 ```bash
-python sft.py ... --random_weights
+llmmd-sft ... --random_weights
 ```
 
 ### 2. Molecule Generation (Fixed Temperature)
 
 ```bash
-python molecule_generation.py \
+llmmd-molgen --mode fixed \
     --save_dir output_dir \
     --model_dir path/to/checkpoint \
     --temperature 0.6 \
@@ -58,7 +59,7 @@ python molecule_generation.py \
 ### 3. Molecule Generation (Temperature Ramping)
 
 ```bash
-python efficient_molecule_generation.py \
+llmmd-molgen --mode efficient \
     --save_dir output_dir \
     --model_dir path/to/checkpoint \
     --temperature_start 0.1 \
@@ -72,10 +73,10 @@ python efficient_molecule_generation.py \
 ### 4. Docking Evaluation
 
 ```bash
-python docking_evaluation.py input_molecules.csv protein_name
+llmmd-dock --input_csv generated_mols.csv --protein 1syh --num_cores 8
 ```
 
-Where `protein_name` is one of: `1syh`, `4lde`, `6y2f`.
+Supported proteins: `1syh`, `4lde`, `6y2f`.
 
 ## Example Training Data
 
