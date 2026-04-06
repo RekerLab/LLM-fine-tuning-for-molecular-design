@@ -4,10 +4,13 @@
 Ported from tartarus/docking.py with paths updated to use package data.
 """
 
+import logging
 import os
 import subprocess
 import time
 import uuid
+
+logger = logging.getLogger(__name__)
 
 _PKG_DIR = os.path.abspath(os.path.dirname(__file__))
 _DATA_DIR = os.path.join(_PKG_DIR, "data")
@@ -24,7 +27,8 @@ def check_energy(lig_, bin=""):
         result = subprocess.run(ob_cmd, capture_output=True)
         line = result.stdout.decode("utf-8").split("\n")[-2]
         total_energy = float(line.split(" ")[-2])
-    except Exception:
+    except Exception as exc:
+        logger.warning("obenergy failed for %s: %s", lig_, exc)
         total_energy = 10000
     return total_energy
 
@@ -148,7 +152,8 @@ def perform_calc_single(smi, receptor_type, docking_program="qvina", bin="", sav
             output_filename, out_location, receptor_type,
             method=docking_program, bin=bin,
         )
-    except Exception:
+    except Exception as exc:
+        logger.warning("Docking failed for %s: %s", smi, exc)
         return 10**4
     finally:
         if not save_pdb:

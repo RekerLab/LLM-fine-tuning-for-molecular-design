@@ -25,6 +25,7 @@ dependencies = [
 llmmd-sft = "llmmd.sft:main"
 llmmd-molgen = "llmmd.molgen:main"
 llmmd-dock = "llmmd.docking.evaluate:main"
+llmmd-random-base = "llmmd.random_base:main"
 
 [tool.setuptools.packages.find]
 include = ["llmmd*"]

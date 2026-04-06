@@ -51,43 +51,8 @@ class SftArgs(Tap):
     seed: int = 3407
     """Random seed."""
     random_weights: bool = False
-    """If True, reinitialize all pretrained weights randomly for control experiment."""
-
-
-def random_weights_control(model, seed=None):
-    """Reinitialize all pretrained parameters with random weights.
-
-    Creates a control model to demonstrate the importance of pretrained weights.
-    """
-    if seed is not None:
-        torch.manual_seed(seed)
-        if torch.cuda.is_available():
-            torch.cuda.manual_seed_all(seed)
-
-    print("=" * 50)
-    print("WARNING: Reinitializing all pretrained weights!")
-    print("This is a control experiment - expect poor performance.")
-    print("=" * 50)
-
-    for name, param in model.named_parameters():
-        if param.requires_grad:
-            if "lora_" in name:
-                continue
-            if len(param.shape) >= 2:
-                torch.nn.init.xavier_uniform_(param.data)
-            elif len(param.shape) == 1:
-                if "norm" in name.lower() or "ln" in name.lower():
-                    if "weight" in name:
-                        torch.nn.init.ones_(param.data)
-                    else:
-                        torch.nn.init.zeros_(param.data)
-                else:
-                    torch.nn.init.zeros_(param.data)
-
-    print("All pretrained weights have been randomly reinitialized.")
-    print("=" * 50)
-
-    return model
+    """Deprecated. Use llmmd-random-base to create a randomized model first,
+    then pass its path via --model. Kept for backward compatibility but ignored."""
 
 
 def check_checkpoint_directories(base_dir):
@@ -132,7 +97,8 @@ def main():
     )
 
     if args.random_weights:
-        model = random_weights_control(model, seed=args.seed)
+        print("WARNING: --random_weights is deprecated and ignored.")
+        print("Use llmmd-random-base to create a randomized model, then pass via --model.")
 
     tokenizer = get_chat_template(
         tokenizer,
@@ -196,6 +162,7 @@ def main():
             lr_scheduler_type="linear",
             seed=args.seed,
             output_dir=args.save_dir,
+            report_to="none",
         ),
     )
 
